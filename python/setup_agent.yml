@@ -1,0 +1,41 @@
+---
+- name: Configuration de l'Agent Python
+  hosts: all
+  become: yes
+  tasks:
+    - name: Installer Python3 et Flask
+      apt:
+        name: 
+          - python3
+          - python3-flask
+        state: present
+        update_cache: yes
+
+    - name: Copier le fichier webagent.py
+      copy:
+        src: "webagent.py"
+        dest: "/opt/webagent.py"
+        mode: '0644'
+
+    - name: Créer le service Systemd pour l'agent
+      copy:
+        dest: /etc/systemd/system/pki-agent.service
+        content: |
+          [Unit]
+          Description=API Agent Python pour PKI
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/bin/python3 /opt/webagent.py
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Activer et démarrer le service pki-agent
+      systemd:
+        name: pki-agent
+        state: restarted
+        enabled: yes
+        daemon_reload: yes

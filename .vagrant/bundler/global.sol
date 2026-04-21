@@ -1,0 +1,1 @@
+{"dependencies":[["vagrant-routeros",["= 0.5.0"]]],"checksum":"e2fa7f252cf27f6cee3cfea82c84f60af18557536c78c62e7d9865053ad7026f","vagrant_version":"2.4.9"}

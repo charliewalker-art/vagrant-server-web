@@ -1,0 +1,21 @@
+---
+- name: Deploiement des scripts Bash
+  hosts: all
+  become: yes
+  tasks:
+    - name: Créer le répertoire /opt/scripts
+      file:
+        path: /opt/scripts
+        state: directory
+        mode: '0755'
+
+    - name: Copier les scripts depuis le dossier local
+      copy:
+        src: "./script/{{ item }}"
+        dest: "/opt/scripts/{{ item }}"
+        mode: '0755'
+      with_items:
+        - deploy_certs_interactive.sh
+        - deploy_domain_certs.sh
+        - generate_apache_conf.sh
+        - restar_pki.sh

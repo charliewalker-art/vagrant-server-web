@@ -1,0 +1,46 @@
+---
+- name: Configuration du serveur Apache2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Installer Apache2 et OpenSSL
+      apt:
+        name:
+          - apache2
+          - openssl
+          - ca-certificates
+        state: present
+        update_cache: yes
+
+    - name: Activer le module SSL d'Apache
+      apache2_module:
+        name: ssl
+        state: present
+      notify: Redémarrer Apache
+
+    - name: Activer le module Rewrite (souvent utile)
+      apache2_module:
+        name: rewrite
+        state: present
+      notify: Redémarrer Apache
+
+    - name: Déployer le fichier 000-default.conf personnalisé
+      copy:
+        src: "000-default.conf"
+        dest: "/etc/apache2/sites-available/000-default.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Redémarrer Apache
+
+    - name: S'assurer qu'Apache est démarré
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Redémarrer Apache
+      service:
+        name: apache2
+        state: restarted
